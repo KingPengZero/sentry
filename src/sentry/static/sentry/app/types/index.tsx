@@ -737,6 +737,7 @@ export type Group = {
   userCount: number;
   userReportCount: number;
   subscriptionDetails: {disabled?: boolean; reason?: string} | null;
+  inbox?: {reason?: number; reasonDetails?: string};
 };
 
 export type GroupTombstone = {

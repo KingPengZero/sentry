@@ -7,7 +7,7 @@ import {addLoadingMessage, clearIndicators} from 'app/actionCreators/indicator';
 import {t, tct, tn} from 'app/locale';
 import {IconEllipsis, IconPause, IconPlay} from 'app/icons';
 import {Client} from 'app/api';
-import {GlobalSelection, Group, Project, ResolutionStatus} from 'app/types';
+import {GlobalSelection, Group, Organization, Project, ResolutionStatus} from 'app/types';
 import space from 'app/styles/space';
 import theme from 'app/utils/theme';
 import ActionLink from 'app/components/actions/actionLink';
@@ -23,7 +23,9 @@ import SelectedGroupStore from 'app/stores/selectedGroupStore';
 import ToolbarHeader from 'app/components/toolbarHeader';
 import Tooltip from 'app/components/tooltip';
 import {callIfFunction} from 'app/utils/callIfFunction';
+import {queryToObj} from 'app/utils/stream';
 import withApi from 'app/utils/withApi';
+import withOrganization from 'app/utils/withOrganization';
 
 const BULK_LIMIT = 1000;
 const BULK_LIMIT_STR = BULK_LIMIT.toLocaleString();
@@ -153,6 +155,7 @@ type Props = {
   statsPeriod: string;
   query: string;
   queryCount: number;
+  organization: Organization;
 };
 
 type State = {
@@ -401,6 +404,7 @@ class IssueListActions extends React.Component<Props, State> {
       realtimeActive,
       selection,
       statsPeriod,
+      organization,
     } = this.props;
     const issues = this.state.selectedIds;
     const numIssues = issues.size;
@@ -413,10 +417,14 @@ class IssueListActions extends React.Component<Props, State> {
     } = this.state;
     const confirm = getConfirm(numIssues, allInQuerySelected, query, queryCount);
     const label = getLabel(numIssues, allInQuerySelected);
+    const queryObj = queryToObj(query);
 
     // merges require a single project to be active in an org context
     // selectedProjectSlug is null when 0 or >1 projects are selected.
     const mergeDisabled = !(multiSelected && selectedProjectSlug);
+    const orgFeatures = new Set(organization.features);
+    const hasInbox = orgFeatures.has('inbox');
+    const inboxTabActive = queryObj.hasOwnProperty('is') && queryObj.is === 'inbox';
 
     return (
       <Sticky>
@@ -600,6 +608,10 @@ class IssueListActions extends React.Component<Props, State> {
           <AssigneesLabel className="align-right hidden-xs hidden-sm">
             <ToolbarHeader>{t('Assignee')}</ToolbarHeader>
           </AssigneesLabel>
+          {hasInbox && inboxTabActive && (
+            <ReasonSpacerLabel className="align-right hidden-xs hidden-sm" />
+          )}
+          {hasInbox && <TimesSpacerLabel className="align-right hidden-xs hidden-sm" />}
         </StyledFlex>
 
         {!allResultsVisible && pageSelected && (
@@ -742,6 +754,18 @@ const AssigneesLabel = styled('div')`
   margin-right: ${space(2)};
 `;
 
+const ReasonSpacerLabel = styled('div')`
+  width: 80px;
+  margin-left: ${space(2)};
+  margin-right: ${space(2)};
+`;
+
+const TimesSpacerLabel = styled('div')`
+  width: 160px;
+  margin-left: ${space(2)};
+  margin-right: ${space(2)};
+`;
+
 // New icons are misaligned inside bootstrap buttons.
 // This is a shim that can be removed when buttons are upgraded
 // to styled components.
@@ -765,4 +789,4 @@ const SelectAllLink = styled('a')`
 
 export {IssueListActions};
 
-export default withApi(IssueListActions);
+export default withApi(withOrganization(IssueListActions));
