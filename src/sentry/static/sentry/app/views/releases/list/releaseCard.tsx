@@ -150,8 +150,8 @@ const StyledPanelItem = styled(PanelItem)`
 const Layout = styled('div')`
   display: grid;
   /* a,b are here to match the health grid layout (offset because of gap on fewer columns) */
-  grid-template-areas: 'version package-name created a commits b new-issues';
-  grid-template-columns: 2fr 2fr 1.4fr 1.4fr 2.1fr 0fr 1.5fr;
+  grid-template-areas: 'version package-name created commits a b new-issues';
+  grid-template-columns: 2fr 2fr 1.4fr 1.4fr 0fr 0fr 3.6fr;
   grid-column-gap: ${space(1.5)};
   width: 100%;
   align-items: center;
@@ -199,8 +199,12 @@ const PackageNameColumn = styled(Column)`
 
 const CommitsColumn = styled(Column)`
   grid-area: commits;
+  text-align: center;
   @media (max-width: ${p => p.theme.breakpoints[1]}) {
     display: none;
+  }
+  @media (max-width: ${p => p.theme.breakpoints[2]}) {
+    text-align: left;
   }
 `;
 
