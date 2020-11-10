@@ -11534,7 +11534,7 @@ pkg-up@2.0.0:
   dependencies:
     find-up "^2.1.0"
 
-platformicons@3.2.2:
+platformicons@^3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/platformicons/-/platformicons-3.2.2.tgz#d244c8b76852c050032411091f5179fd8350376e"
   integrity sha512-wAc0rFM6N22Mb24+stnQyjZaMAp3kTBzjzujs9gvnPHDwB4SWUvA+BQ9VRRcvJ7S8jBSpLASD/ZZHtRFedDNZQ==
